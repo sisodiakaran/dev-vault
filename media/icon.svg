@@ -1,0 +1,62 @@
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#111C34"/>
+      <stop offset="100%" stop-color="#0B1220"/>
+    </linearGradient>
+    <linearGradient id="doorGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#38BDF8"/>
+      <stop offset="100%" stop-color="#0EA5E9"/>
+    </linearGradient>
+    <radialGradient id="faceGrad" cx="50%" cy="40%" r="65%">
+      <stop offset="0%" stop-color="#22B2F5"/>
+      <stop offset="100%" stop-color="#0B84C4"/>
+    </radialGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect x="16" y="16" width="480" height="480" rx="104" fill="url(#bgGrad)"/>
+  <rect x="16.5" y="16.5" width="479" height="479" rx="103.5" fill="none" stroke="#1E293B" stroke-width="1"/>
+
+  <!-- Code braces flanking the vault -->
+  <path d="M150 160
+           C 120 160 110 175 110 195
+           C 110 215 110 230 80 256
+           C 110 282 110 297 110 317
+           C 110 337 120 352 150 352"
+        fill="none" stroke="#0EA5E9" stroke-width="18" stroke-linecap="round" stroke-linejoin="round" opacity="0.95"/>
+  <path d="M362 160
+           C 392 160 402 175 402 195
+           C 402 215 402 230 432 256
+           C 402 282 402 297 402 317
+           C 402 337 392 352 362 352"
+        fill="none" stroke="#0EA5E9" stroke-width="18" stroke-linecap="round" stroke-linejoin="round" opacity="0.95"/>
+
+  <!-- Vault outer ring -->
+  <circle cx="256" cy="256" r="92" fill="url(#doorGrad)"/>
+  <circle cx="256" cy="256" r="92" fill="none" stroke="#0B1220" stroke-width="3" opacity="0.25"/>
+
+  <!-- Rivets -->
+  <g fill="#0B1220" opacity="0.55">
+    <circle cx="256" cy="172.6" r="6"/>
+    <circle cx="315.7" cy="196.3" r="6"/>
+    <circle cx="339.4" cy="256" r="6"/>
+    <circle cx="315.7" cy="315.7" r="6"/>
+    <circle cx="256" cy="339.4" r="6"/>
+    <circle cx="196.3" cy="315.7" r="6"/>
+    <circle cx="172.6" cy="256" r="6"/>
+    <circle cx="196.3" cy="196.3" r="6"/>
+  </g>
+
+  <!-- Vault inner rim -->
+  <circle cx="256" cy="256" r="74" fill="#0F172A"/>
+
+  <!-- Vault face -->
+  <circle cx="256" cy="256" r="63" fill="url(#faceGrad)"/>
+
+  <!-- Keyhole (accent) -->
+  <g>
+    <circle cx="256" cy="239" r="14" fill="#F59E0B"/>
+    <path d="M246.6 248.8 L265.4 248.8 L271.8 281.9 L240.2 281.9 Z" fill="#F59E0B"/>
+  </g>
+</svg>
