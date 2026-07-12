@@ -4,18 +4,26 @@
   "description": "Secure credential storage, right where you code.",
   "version": "0.1.0",
   "publisher": "AsyncOwl",
-  "website": "https://asyncowl.com/dev-vault",
+  "license": "MIT",
+  "homepage": "https://asyncowl.com/dev-vault",
+  "bugs": {
+    "url": "https://github.com/sisodiakaran/dev-vault/issues"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/sisodiakaran/dev-vault"
   },
   "icon": "media/icon.png",
+  "galleryBanner": {
+    "color": "#0B1220",
+    "theme": "dark"
+  },
+  "pricing": "Free",
   "engines": {
     "vscode": "^1.85.0"
   },
   "categories": [
-    "Other",
-    "Security"
+    "Other"
   ],
   "keywords": [
     "password",
@@ -157,11 +165,11 @@
       },
       {
         "command": "devvault.statusBar.copyUsername",
-        "title": "DevVault: Fill Username at Selection"
+        "title": "DevVault: Copy Username"
       },
       {
         "command": "devvault.statusBar.copyPassword",
-        "title": "DevVault: Fill Password at Selection"
+        "title": "DevVault: Copy Password"
       }
     ],
     "menus": {
@@ -339,7 +347,7 @@
     "compile": "node esbuild.js",
     "watch": "node esbuild.js --watch",
     "package": "node esbuild.js --production",
-    "vsix": "vsce package --allow-missing-repository --no-dependencies",
+    "vsix": "vsce package --no-dependencies",
     "check-types": "tsc --noEmit",
     "lint": "tsc --noEmit"
   },

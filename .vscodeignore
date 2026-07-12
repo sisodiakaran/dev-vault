@@ -9,5 +9,6 @@ tsconfig.json
 **/.DS_Store
 .gitignore
 media/font-src/**
+media/icon.svg
 media/devvault-glyph.svg
 media/devvault-icons.json
