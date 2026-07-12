@@ -1,4 +1,4 @@
-# DevVault
+# Dev Vault
 
 Secure credential storage, right where you code.
 
@@ -73,6 +73,7 @@ Status bar **Username** / **Password** also copy to the clipboard when you’re 
 | --- | --- | --- |
 | `devvault.clipboardClearSeconds` | `30` | Clear clipboard after N seconds |
 | `devvault.idleLockMinutes` | `15` | Auto-lock after idle (0 = disabled) |
+| `devvault.rememberUnlockHours` | `24` | Remember master password across restarts for N hours (0 = always prompt). Manual Lock clears it. |
 | `devvault.passwordLength` | `20` | Generated password length |
 | `devvault.passwordIncludeSymbols` | `true` | Include symbols in generated passwords |
 
@@ -80,8 +81,8 @@ Status bar **Username** / **Password** also copy to the clipboard when you’re 
 
 - **Metadata** (name, URL, username, tags) is stored in VS Code `globalState` (not secret, but not passwords).
 - **Passwords and notes** are encrypted with AES-256-GCM and stored via `SecretStorage` (backed by the OS keychain / Electron safeStorage).
-- The master password is never persisted; it is held in memory only while the vault is unlocked.
-- Locking or deactivating the extension clears in-memory secrets.
+- The master password is held in memory while the vault is unlocked. When `devvault.rememberUnlockHours` is greater than 0, it is also stored in `SecretStorage` until that window expires or you use **Lock**.
+- Locking or deactivating the extension clears in-memory secrets. Deactivate/restart can restore unlock from the remembered session if it has not expired.
 - There are **no network calls** related to the vault.
 
 Keep a strong master password. Losing it means you cannot decrypt the vault.

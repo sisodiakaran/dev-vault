@@ -14,6 +14,8 @@ import type {
 const SECRET_KEY = 'devvault.vault.encrypted';
 const INDEX_KEY = 'devvault.vault.index';
 const SETUP_FLAG_KEY = 'devvault.vault.initialized';
+const SESSION_PASSWORD_KEY = 'devvault.session.masterPassword';
+const SESSION_EXPIRES_KEY = 'devvault.session.expiresAt';
 
 /** Legacy keys from the DevPass rename — migrated once on activate. */
 const LEGACY_SECRET_KEY = 'devpass.vault.encrypted';
@@ -25,6 +27,7 @@ export class VaultService {
   private masterPassword: string | undefined;
   private secretsCache: Record<string, VaultEntrySecrets> = {};
   private idleTimer: ReturnType<typeof setTimeout> | undefined;
+  private sessionExpiryTimer: ReturnType<typeof setTimeout> | undefined;
   private readonly _onDidChange = new vscode.EventEmitter<void>();
   readonly onDidChange = this._onDidChange.event;
 
@@ -94,8 +97,78 @@ export class VaultService {
       return;
     }
     this.idleTimer = setTimeout(() => {
-      void this.lock('Vault locked due to inactivity.');
+      // Keep remembered session so reload/restart can unlock within the remember window.
+      void this.lock('Vault locked due to inactivity.', { clearRememberedSession: false });
     }, minutes * 60_000);
+  }
+
+  private clearSessionExpiryTimer(): void {
+    if (this.sessionExpiryTimer) {
+      clearTimeout(this.sessionExpiryTimer);
+      this.sessionExpiryTimer = undefined;
+    }
+  }
+
+  private scheduleSessionExpiry(expiresAt: number): void {
+    this.clearSessionExpiryTimer();
+    const remaining = expiresAt - Date.now();
+    if (remaining <= 0) {
+      return;
+    }
+    this.sessionExpiryTimer = setTimeout(() => {
+      void this.lock('Remembered unlock expired. Enter your master password again.');
+    }, remaining);
+  }
+
+  private async saveRememberedSession(masterPassword: string): Promise<void> {
+    const hours = getDevVaultConfig().get<number>('rememberUnlockHours', 24);
+    if (hours <= 0) {
+      await this.clearRememberedSession();
+      return;
+    }
+    const expiresAt = Date.now() + hours * 3_600_000;
+    await this.context.secrets.store(SESSION_PASSWORD_KEY, masterPassword);
+    await this.context.globalState.update(SESSION_EXPIRES_KEY, expiresAt);
+    this.scheduleSessionExpiry(expiresAt);
+  }
+
+  private async clearRememberedSession(): Promise<void> {
+    this.clearSessionExpiryTimer();
+    await this.context.secrets.delete(SESSION_PASSWORD_KEY);
+    await this.context.globalState.update(SESSION_EXPIRES_KEY, undefined);
+  }
+
+  /**
+   * If a remembered unlock session is still valid, unlock silently.
+   * Returns true when the vault was unlocked from the session.
+   */
+  async tryRestoreSession(): Promise<boolean> {
+    if (this.status !== 'locked') {
+      return false;
+    }
+    const hours = getDevVaultConfig().get<number>('rememberUnlockHours', 24);
+    if (hours <= 0) {
+      await this.clearRememberedSession();
+      return false;
+    }
+    const expiresAt = this.context.globalState.get<number>(SESSION_EXPIRES_KEY);
+    if (!expiresAt || Date.now() >= expiresAt) {
+      await this.clearRememberedSession();
+      return false;
+    }
+    const password = await this.context.secrets.get(SESSION_PASSWORD_KEY);
+    if (!password) {
+      await this.clearRememberedSession();
+      return false;
+    }
+    try {
+      await this.unlock(password, { persistSession: false });
+      this.scheduleSessionExpiry(expiresAt);
+      return true;
+    } catch {
+      await this.clearRememberedSession();
+      return false;
+    }
   }
 
   private getIndex(): VaultIndex {
@@ -139,12 +212,16 @@ export class VaultService {
     await this.persistSecrets(masterPassword);
     await this.saveIndex({ version: 1, entries: [] });
     await this.context.globalState.update(SETUP_FLAG_KEY, true);
+    await this.saveRememberedSession(masterPassword);
     this.resetIdleTimer();
     await this.updateContextKeys();
     this._onDidChange.fire();
   }
 
-  async unlock(masterPassword: string): Promise<void> {
+  async unlock(
+    masterPassword: string,
+    options?: { persistSession?: boolean }
+  ): Promise<void> {
     if (this.status === 'uninitialized') {
       throw new Error('Vault is not set up yet');
     }
@@ -161,17 +238,32 @@ export class VaultService {
     }
     this.masterPassword = masterPassword;
     this.secretsCache = payload.entries ?? {};
+    if (options?.persistSession !== false) {
+      await this.saveRememberedSession(masterPassword);
+    }
     this.resetIdleTimer();
     await this.updateContextKeys();
     this._onDidChange.fire();
   }
 
-  async lock(message?: string): Promise<void> {
+  async lock(
+    message?: string,
+    options?: { clearRememberedSession?: boolean }
+  ): Promise<void> {
     this.masterPassword = undefined;
     this.secretsCache = {};
     if (this.idleTimer) {
       clearTimeout(this.idleTimer);
       this.idleTimer = undefined;
+    }
+    if (options?.clearRememberedSession !== false) {
+      await this.clearRememberedSession();
+    } else {
+      this.clearSessionExpiryTimer();
+      const expiresAt = this.context.globalState.get<number>(SESSION_EXPIRES_KEY);
+      if (expiresAt && expiresAt > Date.now()) {
+        this.scheduleSessionExpiry(expiresAt);
+      }
     }
     await this.updateContextKeys();
     this._onDidChange.fire();
@@ -321,6 +413,7 @@ export class VaultService {
     };
     const blob = this.crypto.reencrypt(JSON.stringify(payload), newPassword);
     await this.context.secrets.store(SECRET_KEY, JSON.stringify(blob));
+    await this.saveRememberedSession(newPassword);
     this.resetIdleTimer();
     this._onDidChange.fire();
   }
@@ -338,6 +431,7 @@ export class VaultService {
       clearTimeout(this.idleTimer);
       this.idleTimer = undefined;
     }
+    this.clearSessionExpiryTimer();
     this._onDidChange.dispose();
   }
 

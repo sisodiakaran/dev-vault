@@ -21,9 +21,13 @@ export function activate(context: vscode.ExtensionContext): void {
 
   void (async () => {
     await vault?.migrateFromLegacy();
+    const restored = await vault?.tryRestoreSession();
     await vault?.updateContextKeys();
     treeProvider?.refresh();
     statusBar?.refresh();
+    if (restored) {
+      void vscode.window.setStatusBarMessage('DevVault unlocked from remembered session', 3000);
+    }
   })();
 
   context.subscriptions.push(

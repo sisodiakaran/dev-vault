@@ -4,7 +4,7 @@
   "description": "Secure credential storage, right where you code.",
   "version": "0.1.0",
   "publisher": "AsyncOwl",
-  "website": "https://asyncowl.com",
+  "website": "https://asyncowl.com/dev-vault",
   "repository": {
     "type": "git",
     "url": "https://github.com/sisodiakaran/dev-vault"
@@ -311,6 +311,13 @@
           "minimum": 0,
           "maximum": 240,
           "description": "Minutes of inactivity before the vault locks automatically. Set to 0 to disable."
+        },
+        "devvault.rememberUnlockHours": {
+          "type": "number",
+          "default": 24,
+          "minimum": 0,
+          "maximum": 168,
+          "description": "Hours to remember the master password across restarts (stored in OS keychain / SecretStorage). Set to 0 to require unlock every time. Manual Lock clears the remembered session."
         },
         "devvault.passwordLength": {
           "type": "number",
