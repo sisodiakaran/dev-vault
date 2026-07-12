@@ -31,12 +31,22 @@
     "onCommand:devvault.lock",
     "onCommand:devvault.add",
     "onCommand:devvault.fillForUrl",
+    "onCommand:devvault.openInBrowser",
     "onCommand:devvault.generatePassword",
     "onCommand:devvault.changeMasterPassword",
     "onCommand:devvault.statusBar.select"
   ],
   "main": "./dist/extension.js",
   "contributes": {
+    "icons": {
+      "devvault-icon": {
+        "description": "DevVault extension icon",
+        "default": {
+          "fontPath": "./media/devvault-icons.woff",
+          "fontCharacter": "\\F101"
+        }
+      }
+    },
     "viewsContainers": {
       "activitybar": [
         {
@@ -115,6 +125,11 @@
         "icon": "$(globe)"
       },
       {
+        "command": "devvault.openInBrowser",
+        "title": "DevVault: Open in Browser & Login",
+        "icon": "$(link-external)"
+      },
+      {
         "command": "devvault.generatePassword",
         "title": "DevVault: Generate Password",
         "icon": "$(shield)"
@@ -133,12 +148,20 @@
         "title": "DevVault: Select Status Bar Entry"
       },
       {
+        "command": "devvault.statusBar.fillUsername",
+        "title": "DevVault: Fill Username at Selection"
+      },
+      {
+        "command": "devvault.statusBar.fillPassword",
+        "title": "DevVault: Fill Password at Selection"
+      },
+      {
         "command": "devvault.statusBar.copyUsername",
-        "title": "DevVault: Copy Status Bar Username"
+        "title": "DevVault: Fill Username at Selection"
       },
       {
         "command": "devvault.statusBar.copyPassword",
-        "title": "DevVault: Copy Status Bar Password"
+        "title": "DevVault: Fill Password at Selection"
       }
     ],
     "menus": {
@@ -174,6 +197,16 @@
           "command": "devvault.copyPassword",
           "when": "view == devvault.vault && viewItem == vaultEntry",
           "group": "inline@2"
+        },
+        {
+          "command": "devvault.openInBrowser",
+          "when": "view == devvault.vault && viewItem == vaultEntry",
+          "group": "inline@3"
+        },
+        {
+          "command": "devvault.openInBrowser",
+          "when": "view == devvault.vault && viewItem == vaultEntry",
+          "group": "1_copy@0"
         },
         {
           "command": "devvault.copyUsername",
@@ -228,6 +261,14 @@
         },
         {
           "command": "devvault.statusBar.select",
+          "when": "false"
+        },
+        {
+          "command": "devvault.statusBar.fillUsername",
+          "when": "false"
+        },
+        {
+          "command": "devvault.statusBar.fillPassword",
           "when": "false"
         },
         {

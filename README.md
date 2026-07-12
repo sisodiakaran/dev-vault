@@ -41,6 +41,16 @@ Install the generated `devvault-0.1.0.vsix` in Cursor/VS Code: **Extensions → 
 4. Click an entry (or use the inline icons) to copy the password
 5. Paste into the Cursor/VS Code built-in browser login form
 
+### Login with the built-in browser
+
+Cursor/VS Code does **not** allow extensions to type into the built-in browser. DevVault opens the page and copies credentials for paste:
+
+1. Unlock the vault and pick an entry (status bar or sidebar)
+2. Run **DevVault: Open in Browser & Login** (or click the globe icon on an entry)
+3. Paste the username in the browser (`Cmd/Ctrl+V`), then choose **Copy Password** and paste that too
+
+Status bar **Username** / **Password** also copy to the clipboard when you’re in the browser (they fill the editor only when a text file is focused).
+
 ### Useful commands
 
 | Command | Description |

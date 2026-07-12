@@ -8,3 +8,6 @@ tsconfig.json
 **/*.map
 **/.DS_Store
 .gitignore
+media/font-src/**
+media/devvault-glyph.svg
+media/devvault-icons.json

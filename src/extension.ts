@@ -1,6 +1,7 @@
 import * as vscode from 'vscode';
 import { SecureClipboard } from './clipboard/SecureClipboard';
 import { generatePassword } from './generator/PasswordGenerator';
+import { assistBrowserLogin } from './ui/BrowserFill';
 import { promptMasterPassword } from './ui/EntryEditor';
 import { showEntryForm } from './ui/EntryFormPanel';
 import { VaultEntryItem, VaultTreeProvider } from './ui/VaultTreeProvider';
@@ -53,6 +54,9 @@ export function activate(context: vscode.ExtensionContext): void {
       withVault((v) => revealCommand(v, item))
     ),
     vscode.commands.registerCommand('devvault.fillForUrl', () => withVault((v) => fillForUrlCommand(v))),
+    vscode.commands.registerCommand('devvault.openInBrowser', (item?: VaultEntryItem) =>
+      withVault((v) => openInBrowserCommand(v, item))
+    ),
     vscode.commands.registerCommand('devvault.generatePassword', () => generatePasswordCommand()),
     vscode.commands.registerCommand('devvault.refresh', () => treeProvider?.refresh()),
     vscode.commands.registerCommand('devvault.changeMasterPassword', () =>
@@ -244,6 +248,15 @@ async function revealCommand(v: VaultService, item?: VaultEntryItem): Promise<vo
   }
 }
 
+async function openInBrowserCommand(v: VaultService, item?: VaultEntryItem): Promise<void> {
+  const entry = await resolveEntry(v, item);
+  if (!entry || !clipboard) {
+    return;
+  }
+  await statusBar?.setActiveEntry(entry.id);
+  await assistBrowserLogin(entry, clipboard);
+}
+
 async function fillForUrlCommand(v: VaultService): Promise<void> {
   if (!(await ensureUnlocked(v))) {
     return;
@@ -275,10 +288,13 @@ async function fillForUrlCommand(v: VaultService): Promise<void> {
     return;
   }
 
+  await statusBar?.setActiveEntry(entry.id);
+
   const action = await vscode.window.showQuickPick(
     [
+      { label: '$(globe) Open in Browser & Login', id: 'browser' },
       { label: '$(account) Copy username', id: 'user' },
-      { label: '$(key) Copy password', id: 'pass' },
+      { label: '$(lock) Copy password', id: 'pass' },
       { label: '$(files) Copy username, then password', id: 'both' },
     ],
     {
@@ -290,6 +306,11 @@ async function fillForUrlCommand(v: VaultService): Promise<void> {
     return;
   }
 
+  if (action.id === 'browser') {
+    await assistBrowserLogin(entry, clipboard);
+    return;
+  }
+
   if (action.id === 'user' || action.id === 'both') {
     await clipboard.copy(entry.username, 'Username');
   }
@@ -298,7 +319,7 @@ async function fillForUrlCommand(v: VaultService): Promise<void> {
   }
   if (action.id === 'both') {
     const next = await vscode.window.showInformationMessage(
-      'Username copied. Paste it, then copy the password.',
+      'Username copied. Paste it in the browser, then copy the password.',
       'Copy Password'
     );
     if (next === 'Copy Password') {
