@@ -1,29 +1,35 @@
 import * as vscode from 'vscode';
 import { SecureClipboard } from './clipboard/SecureClipboard';
 import { generatePassword } from './generator/PasswordGenerator';
-import { promptEditEntry, promptMasterPassword, promptNewEntry } from './ui/EntryEditor';
+import { promptMasterPassword } from './ui/EntryEditor';
+import { showEntryForm } from './ui/EntryFormPanel';
 import { VaultEntryItem, VaultTreeProvider } from './ui/VaultTreeProvider';
+import { VaultStatusBar } from './ui/VaultStatusBar';
 import { VaultService, getDevVaultConfig } from './vault/VaultService';
 
 let vault: VaultService | undefined;
 let clipboard: SecureClipboard | undefined;
 let treeProvider: VaultTreeProvider | undefined;
+let statusBar: VaultStatusBar | undefined;
 
 export function activate(context: vscode.ExtensionContext): void {
   vault = new VaultService(context);
   clipboard = new SecureClipboard();
   treeProvider = new VaultTreeProvider(vault);
+  statusBar = new VaultStatusBar(vault, clipboard, context);
 
   void (async () => {
     await vault?.migrateFromLegacy();
     await vault?.updateContextKeys();
     treeProvider?.refresh();
+    statusBar?.refresh();
   })();
 
   context.subscriptions.push(
     vault,
     clipboard,
     treeProvider,
+    statusBar,
     vscode.window.createTreeView('devvault.vault', {
       treeDataProvider: treeProvider,
       showCollapseAll: false,
@@ -59,9 +65,11 @@ export function deactivate(): void {
   vault?.dispose();
   clipboard?.dispose();
   treeProvider?.dispose();
+  statusBar?.dispose();
   vault = undefined;
   clipboard = undefined;
   treeProvider = undefined;
+  statusBar = undefined;
 }
 
 async function withVault<T>(fn: (v: VaultService) => Promise<T> | T): Promise<T | undefined> {
@@ -122,11 +130,12 @@ async function addCommand(v: VaultService): Promise<void> {
   if (!(await ensureUnlocked(v))) {
     return;
   }
-  const input = await promptNewEntry();
+  const input = await showEntryForm('add');
   if (!input) {
     return;
   }
-  await v.addEntry(input);
+  const created = await v.addEntry(input);
+  await statusBar?.setActiveEntry(created.id);
   void vscode.window.showInformationMessage(`Added “${input.name}”`);
 }
 
@@ -177,7 +186,7 @@ async function editCommand(v: VaultService, item?: VaultEntryItem): Promise<void
   if (!entry) {
     return;
   }
-  const input = await promptEditEntry(entry);
+  const input = await showEntryForm('edit', entry);
   if (!input) {
     return;
   }
@@ -207,6 +216,7 @@ async function copyUsernameCommand(v: VaultService, item?: VaultEntryItem): Prom
   if (!entry || !clipboard) {
     return;
   }
+  await statusBar?.setActiveEntry(entry.id);
   await clipboard.copy(entry.username, 'Username');
 }
 
@@ -215,6 +225,7 @@ async function copyPasswordCommand(v: VaultService, item?: VaultEntryItem): Prom
   if (!entry || !clipboard) {
     return;
   }
+  await statusBar?.setActiveEntry(entry.id);
   await clipboard.copy(entry.password, 'Password');
 }
 

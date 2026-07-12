@@ -25,7 +25,16 @@
     "local",
     "devvault"
   ],
-  "activationEvents": [],
+  "activationEvents": [
+    "onView:devvault.vault",
+    "onCommand:devvault.unlock",
+    "onCommand:devvault.lock",
+    "onCommand:devvault.add",
+    "onCommand:devvault.fillForUrl",
+    "onCommand:devvault.generatePassword",
+    "onCommand:devvault.changeMasterPassword",
+    "onCommand:devvault.statusBar.select"
+  ],
   "main": "./dist/extension.js",
   "contributes": {
     "viewsContainers": {
@@ -33,7 +42,7 @@
         {
           "id": "devvault",
           "title": "DevVault",
-          "icon": "media/icon.svg"
+          "icon": "media/activity-icon.svg"
         }
       ]
     },
@@ -42,10 +51,23 @@
         {
           "id": "devvault.vault",
           "name": "Vault",
-          "icon": "media/icon.svg"
+          "icon": "media/activity-icon.svg",
+          "visibility": "visible"
         }
       ]
     },
+    "viewsWelcome": [
+      {
+        "view": "devvault.vault",
+        "contents": "Secure credential storage, right where you code.\n\n[Unlock Vault](command:devvault.unlock)\n\n[Generate Password](command:devvault.generatePassword)",
+        "when": "!devvault.unlocked"
+      },
+      {
+        "view": "devvault.vault",
+        "contents": "No credentials yet.\n\n[Add Entry](command:devvault.add)",
+        "when": "devvault.unlocked"
+      }
+    ],
     "commands": [
       {
         "command": "devvault.unlock",
@@ -105,6 +127,18 @@
       {
         "command": "devvault.changeMasterPassword",
         "title": "DevVault: Change Master Password"
+      },
+      {
+        "command": "devvault.statusBar.select",
+        "title": "DevVault: Select Status Bar Entry"
+      },
+      {
+        "command": "devvault.statusBar.copyUsername",
+        "title": "DevVault: Copy Status Bar Username"
+      },
+      {
+        "command": "devvault.statusBar.copyPassword",
+        "title": "DevVault: Copy Status Bar Password"
       }
     ],
     "menus": {
@@ -190,6 +224,18 @@
         },
         {
           "command": "devvault.refresh",
+          "when": "false"
+        },
+        {
+          "command": "devvault.statusBar.select",
+          "when": "false"
+        },
+        {
+          "command": "devvault.statusBar.copyUsername",
+          "when": "false"
+        },
+        {
+          "command": "devvault.statusBar.copyPassword",
           "when": "false"
         }
       ]
