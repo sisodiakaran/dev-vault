@@ -10,5 +10,6 @@ tsconfig.json
 .gitignore
 media/font-src/**
 media/icon.svg
+media/icon.png
 media/devvault-glyph.svg
 media/devvault-icons.json

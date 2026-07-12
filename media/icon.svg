@@ -1,8 +1,8 @@
 <svg width="512" height="512" viewBox="0 0 480 480" xmlns="http://www.w3.org/2000/svg">
   <defs>
     <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#111C34"/>
-      <stop offset="100%" stop-color="#0B1220"/>
+      <stop offset="0%" stop-color="#1A2B4A"/>
+      <stop offset="100%" stop-color="#0F1A30"/>
     </linearGradient>
     <linearGradient id="doorGrad" x1="0%" y1="0%" x2="0%" y2="100%">
       <stop offset="0%" stop-color="#38BDF8"/>
@@ -14,21 +14,23 @@
     </radialGradient>
   </defs>
 
-  <rect x="0" y="0" width="480" height="480" rx="104" fill="url(#bgGrad)"/>
-  <rect x="0.5" y="0.5" width="479" height="479" rx="103.5" fill="none" stroke="#1E293B" stroke-width="1"/>
+  <!-- Outer glow so the tile reads on dark marketplace UIs -->
+  <rect x="8" y="8" width="464" height="464" rx="112" fill="none" stroke="#38BDF8" stroke-width="6" opacity="0.55"/>
+  <rect x="18" y="18" width="444" height="444" rx="104" fill="url(#bgGrad)"/>
+  <rect x="18.5" y="18.5" width="443" height="443" rx="103.5" fill="none" stroke="#7DD3FC" stroke-width="2" opacity="0.35"/>
 
   <path d="M107.5 120
            C 70 120 57.5 138.75 57.5 163.75
            C 57.5 188.75 57.5 207.5 20 240
            C 57.5 272.5 57.5 291.25 57.5 316.25
            C 57.5 341.25 70 360 107.5 360"
-        fill="none" stroke="#0EA5E9" stroke-width="22" stroke-linecap="round" stroke-linejoin="round" opacity="0.95"/>
+        fill="none" stroke="#7DD3FC" stroke-width="22" stroke-linecap="round" stroke-linejoin="round" opacity="0.98"/>
   <path d="M372.5 120
            C 410 120 422.5 138.75 422.5 163.75
            C 422.5 188.75 422.5 207.5 460 240
            C 422.5 272.5 422.5 291.25 422.5 316.25
            C 422.5 341.25 410 360 372.5 360"
-        fill="none" stroke="#0EA5E9" stroke-width="22" stroke-linecap="round" stroke-linejoin="round" opacity="0.95"/>
+        fill="none" stroke="#7DD3FC" stroke-width="22" stroke-linecap="round" stroke-linejoin="round" opacity="0.98"/>
 
   <circle cx="240" cy="240" r="115" fill="url(#doorGrad)"/>
   <circle cx="240" cy="240" r="115" fill="none" stroke="#0B1220" stroke-width="3.75" opacity="0.25"/>
@@ -45,7 +47,6 @@
   </g>
 
   <circle cx="240" cy="240" r="92.5" fill="#0F172A"/>
-
   <circle cx="240" cy="240" r="78.75" fill="url(#faceGrad)"/>
 
   <g fill="#F59E0B">

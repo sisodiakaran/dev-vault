@@ -1,8 +1,8 @@
 {
-  "name": "devvault",
-  "displayName": "DevVault",
+  "name": "devvault-cred-manager",
+  "displayName": "DevVault Credential Manager",
   "description": "Secure credential storage, right where you code.",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "publisher": "AsyncOwl",
   "license": "MIT",
   "homepage": "https://asyncowl.com/dev-vault",
@@ -13,7 +13,7 @@
     "type": "git",
     "url": "https://github.com/sisodiakaran/dev-vault"
   },
-  "icon": "media/icon.png",
+  "icon": "icon.png",
   "galleryBanner": {
     "color": "#0B1220",
     "theme": "dark"
@@ -348,6 +348,8 @@
     "watch": "node esbuild.js --watch",
     "package": "node esbuild.js --production",
     "vsix": "vsce package --no-dependencies",
+    "publish:marketplace": "vsce publish --no-dependencies",
+    "publish:openvsx": "ovsx publish --no-dependencies",
     "check-types": "tsc --noEmit",
     "lint": "tsc --noEmit"
   },
@@ -356,6 +358,7 @@
     "@types/vscode": "^1.85.0",
     "@vscode/vsce": "^3.2.0",
     "esbuild": "^0.24.0",
+    "ovsx": "^1.0.2",
     "typescript": "^5.6.0"
   }
 }

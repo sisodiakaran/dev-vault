@@ -17,7 +17,12 @@ A local-only password manager for Cursor and VS Code. Store development credenti
 - **Clipboard auto-clear** — secrets are wiped after a configurable delay
 - **Idle lock** — vault locks after inactivity
 
-## Install (local)
+## Install
+
+- **Open VSX** (Cursor and other VS Code–compatible editors): search for **DevVault Credential Manager**, or install `AsyncOwl.devvault-cred-manager` from [open-vsx.org](https://open-vsx.org/extension/AsyncOwl/devvault-cred-manager) once published
+- **VS Code Marketplace**: search for **DevVault Credential Manager**, or install from the Marketplace once published
+
+### Install from VSIX (local)
 
 ```bash
 npm install
@@ -25,13 +30,47 @@ npm run package
 npm run vsix
 ```
 
-Install the generated `devvault-0.1.0.vsix` in Cursor/VS Code: **Extensions → … → Install from VSIX…**
+Install the generated `devvault-cred-manager-0.1.0.vsix` via **Extensions → … → Install from VSIX…**
 
 ### Development
 
 1. Open this folder in Cursor/VS Code
 2. Run `npm install` and `npm run watch`
 3. Press **F5** to launch the Extension Development Host
+
+## Publishing
+
+The same VSIX works for both registries. Publisher id: `AsyncOwl`.
+
+### VS Code Marketplace
+
+1. Create publisher **AsyncOwl** at [marketplace.visualstudio.com/manage](https://marketplace.visualstudio.com/manage)
+2. Create an Azure DevOps PAT with **Marketplace → Manage** (organization: **All accessible organizations**)
+3. `npx vsce login AsyncOwl`
+4. `npm run publish:marketplace`
+
+### Open VSX (required for Cursor’s extension marketplace)
+
+1. Create an [Eclipse account](https://accounts.eclipse.org/) with the **same GitHub username** you use on Open VSX
+2. Sign in at [open-vsx.org](https://open-vsx.org/) with GitHub, link Eclipse, and sign the **Publisher Agreement**
+3. Create a token under [Access Tokens](https://open-vsx.org/user-settings/tokens)
+4. Create the namespace once:
+   ```bash
+   npx ovsx create-namespace AsyncOwl -p <token>
+   ```
+5. Publish (token via `-p` or `OVSX_PAT`):
+   ```bash
+   export OVSX_PAT=<token>
+   npm run publish:openvsx
+   ```
+
+Or package first, then upload the same file to both places:
+
+```bash
+npm run vsix
+npx vsce publish --packagePath ./devvault-cred-manager-0.1.0.vsix
+npx ovsx publish ./devvault-cred-manager-0.1.0.vsix
+```
 
 ## Usage
 

@@ -2,6 +2,12 @@
 
 All notable changes to DevVault will be documented in this file.
 
+## [0.1.1] - 2026-07-12
+
+### Changed
+
+- Marketplace icon moved to package root with stronger contrast for dark Open VSX / Cursor UI
+
 ## [0.1.0] - 2026-07-12
 
 ### Added
