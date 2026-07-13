@@ -49,6 +49,9 @@ export function activate(context: vscode.ExtensionContext): void {
     vscode.commands.registerCommand('devvault.delete', (item?: VaultEntryItem) =>
       withVault((v) => deleteCommand(v, item))
     ),
+    vscode.commands.registerCommand('devvault.entryActions', (item?: VaultEntryItem) =>
+      withVault((v) => entryActionsCommand(v, item))
+    ),
     vscode.commands.registerCommand('devvault.copyUsername', (item?: VaultEntryItem) =>
       withVault((v) => copyUsernameCommand(v, item))
     ),
@@ -201,6 +204,54 @@ async function editCommand(v: VaultService, item?: VaultEntryItem): Promise<void
   }
   await v.updateEntry(entry.id, input);
   showTransientToast(`Updated “${input.name}”`);
+}
+
+async function entryActionsCommand(v: VaultService, item?: VaultEntryItem): Promise<void> {
+  const entry = await resolveEntry(v, item);
+  if (!entry) {
+    return;
+  }
+
+  const target = item ?? new VaultEntryItem(entry);
+  type ActionId = 'copyUsername' | 'copyPassword' | 'openInBrowser' | 'reveal' | 'edit' | 'delete';
+  const picked = await vscode.window.showQuickPick(
+    [
+      { label: '$(account) Copy Username', id: 'copyUsername' as ActionId },
+      { label: '$(key) Copy Password', id: 'copyPassword' as ActionId },
+      { label: '$(link-external) Open in Browser & Login', id: 'openInBrowser' as ActionId },
+      { label: '$(eye) Reveal Password', id: 'reveal' as ActionId },
+      { label: '$(edit) Edit Entry', id: 'edit' as ActionId },
+      { label: '$(trash) Delete Entry', id: 'delete' as ActionId },
+    ],
+    {
+      title: entry.name,
+      placeHolder: 'Choose an action',
+    }
+  );
+  if (!picked) {
+    return;
+  }
+
+  switch (picked.id) {
+    case 'copyUsername':
+      await copyUsernameCommand(v, target);
+      break;
+    case 'copyPassword':
+      await copyPasswordCommand(v, target);
+      break;
+    case 'openInBrowser':
+      await openInBrowserCommand(v, target);
+      break;
+    case 'reveal':
+      await revealCommand(v, target);
+      break;
+    case 'edit':
+      await editCommand(v, target);
+      break;
+    case 'delete':
+      await deleteCommand(v, target);
+      break;
+  }
 }
 
 async function deleteCommand(v: VaultService, item?: VaultEntryItem): Promise<void> {

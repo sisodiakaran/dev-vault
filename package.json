@@ -2,7 +2,7 @@
   "name": "devvault-cred-manager",
   "displayName": "DevVault Credential Manager",
   "description": "Secure credential storage, right where you code.",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "publisher": "AsyncOwl",
   "license": "MIT",
   "homepage": "https://asyncowl.com/dev-vault",
@@ -113,6 +113,11 @@
         "icon": "$(trash)"
       },
       {
+        "command": "devvault.entryActions",
+        "title": "DevVault: Entry Actions",
+        "icon": "$(kebab-vertical)"
+      },
+      {
         "command": "devvault.copyUsername",
         "title": "DevVault: Copy Username",
         "icon": "$(account)"
@@ -197,29 +202,9 @@
       ],
       "view/item/context": [
         {
-          "command": "devvault.copyUsername",
+          "command": "devvault.entryActions",
           "when": "view == devvault.vault && viewItem == vaultEntry",
           "group": "inline@1"
-        },
-        {
-          "command": "devvault.copyPassword",
-          "when": "view == devvault.vault && viewItem == vaultEntry",
-          "group": "inline@2"
-        },
-        {
-          "command": "devvault.openInBrowser",
-          "when": "view == devvault.vault && viewItem == vaultEntry",
-          "group": "inline@3"
-        },
-        {
-          "command": "devvault.edit",
-          "when": "view == devvault.vault && viewItem == vaultEntry",
-          "group": "inline@4"
-        },
-        {
-          "command": "devvault.delete",
-          "when": "view == devvault.vault && viewItem == vaultEntry",
-          "group": "inline@5"
         },
         {
           "command": "devvault.openInBrowser",
@@ -260,6 +245,10 @@
         {
           "command": "devvault.delete",
           "when": "devvault.unlocked"
+        },
+        {
+          "command": "devvault.entryActions",
+          "when": "false"
         },
         {
           "command": "devvault.copyUsername",

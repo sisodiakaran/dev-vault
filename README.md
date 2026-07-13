@@ -77,7 +77,7 @@ npx ovsx publish ./devvault-cred-manager-0.1.0.vsix
 1. Open the **DevVault** icon in the activity bar
 2. Run **DevVault: Unlock Vault** (first run creates a master password)
 3. Click **+** to add an entry (name, URL, username, password, notes, tags)
-4. Click an entry (or use the inline icons) to copy the password; use the pencil / trash icons to edit or delete
+4. Click an entry to copy the password, or use the **⋮** menu on an entry for copy / open / edit / delete (right-click still works too)
 5. Paste into the Cursor/VS Code built-in browser login form
 
 ### Login with the built-in browser
@@ -85,7 +85,7 @@ npx ovsx publish ./devvault-cred-manager-0.1.0.vsix
 Cursor/VS Code does **not** allow extensions to type into the built-in browser. DevVault opens the page and copies credentials for paste:
 
 1. Unlock the vault and pick an entry (status bar or sidebar)
-2. Run **DevVault: Open in Browser & Login** (or click the globe icon on an entry)
+2. Run **DevVault: Open in Browser & Login** (or choose it from an entry’s **⋮** menu)
 3. Paste the username in the browser (`Cmd/Ctrl+V`), then choose **Copy Password** and paste that too
 
 Status bar **Username** / **Password** also copy to the clipboard when you’re in the browser (they fill the editor only when a text file is focused).
