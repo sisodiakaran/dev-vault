@@ -77,7 +77,7 @@ npx ovsx publish ./devvault-cred-manager-0.1.0.vsix
 1. Open the **DevVault** icon in the activity bar
 2. Run **DevVault: Unlock Vault** (first run creates a master password)
 3. Click **+** to add an entry (name, URL, username, password, notes, tags)
-4. Click an entry (or use the inline icons) to copy the password
+4. Click an entry (or use the inline icons) to copy the password; use the pencil / trash icons to edit or delete
 5. Paste into the Cursor/VS Code built-in browser login form
 
 ### Login with the built-in browser
@@ -97,6 +97,8 @@ Status bar **Username** / **Password** also copy to the clipboard when you’re 
 | `DevVault: Unlock Vault` | Unlock or create the vault |
 | `DevVault: Lock Vault` | Lock and clear secrets from memory |
 | `DevVault: Add Entry` | Create a credential |
+| `DevVault: Edit Entry` | Edit a credential (sidebar icon or Command Palette) |
+| `DevVault: Delete Entry` | Delete a credential (trash icon, right-click, or Command Palette) |
 | `DevVault: Fill for URL…` | Find entries by domain and copy |
 | `DevVault: Generate Password` | Generate and copy a strong password |
 | `DevVault: Change Master Password` | Re-encrypt the vault |

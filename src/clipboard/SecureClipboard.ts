@@ -1,11 +1,16 @@
 import * as vscode from 'vscode';
+import { showTransientToast } from '../ui/transientToast';
 import { getDevVaultConfig } from '../vault/VaultService';
 
 export class SecureClipboard {
   private clearTimer: ReturnType<typeof setTimeout> | undefined;
   private lastWritten: string | undefined;
 
-  async copy(value: string, label: string): Promise<void> {
+  /**
+   * @param notify When true (default), shows a toast. Pass false when the caller
+   *   already shows its own confirmation (e.g. browser login flow).
+   */
+  async copy(value: string, label: string, options?: { notify?: boolean }): Promise<void> {
     await vscode.env.clipboard.writeText(value);
     this.lastWritten = value;
 
@@ -19,10 +24,9 @@ export class SecureClipboard {
       void this.clearIfUnchanged(value);
     }, seconds * 1000);
 
-    void vscode.window.setStatusBarMessage(
-      `DevVault: ${label} copied — clipboard clears in ${seconds}s`,
-      seconds * 1000
-    );
+    if (options?.notify !== false) {
+      showTransientToast(`DevVault: ${label} copied — clipboard clears in ${seconds}s`);
+    }
   }
 
   private async clearIfUnchanged(expected: string): Promise<void> {

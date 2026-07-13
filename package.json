@@ -212,6 +212,16 @@
           "group": "inline@3"
         },
         {
+          "command": "devvault.edit",
+          "when": "view == devvault.vault && viewItem == vaultEntry",
+          "group": "inline@4"
+        },
+        {
+          "command": "devvault.delete",
+          "when": "view == devvault.vault && viewItem == vaultEntry",
+          "group": "inline@5"
+        },
+        {
           "command": "devvault.openInBrowser",
           "when": "view == devvault.vault && viewItem == vaultEntry",
           "group": "1_copy@0"
@@ -245,11 +255,11 @@
       "commandPalette": [
         {
           "command": "devvault.edit",
-          "when": "false"
+          "when": "devvault.unlocked"
         },
         {
           "command": "devvault.delete",
-          "when": "false"
+          "when": "devvault.unlocked"
         },
         {
           "command": "devvault.copyUsername",

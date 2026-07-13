@@ -4,6 +4,7 @@ import { generatePassword } from './generator/PasswordGenerator';
 import { assistBrowserLogin } from './ui/BrowserFill';
 import { promptMasterPassword } from './ui/EntryEditor';
 import { showEntryForm } from './ui/EntryFormPanel';
+import { showTransientToast } from './ui/transientToast';
 import { VaultEntryItem, VaultTreeProvider } from './ui/VaultTreeProvider';
 import { VaultStatusBar } from './ui/VaultStatusBar';
 import { VaultService, getDevVaultConfig } from './vault/VaultService';
@@ -104,7 +105,7 @@ async function ensureUnlocked(v: VaultService): Promise<boolean> {
 
 async function unlockCommand(v: VaultService): Promise<void> {
   if (v.isUnlocked) {
-    void vscode.window.showInformationMessage('Vault is already unlocked');
+    showTransientToast('Vault is already unlocked');
     return;
   }
 
@@ -122,7 +123,7 @@ async function unlockCommand(v: VaultService): Promise<void> {
       return;
     }
     await v.setup(password);
-    void vscode.window.showInformationMessage('DevVault vault created and unlocked');
+    showTransientToast('DevVault vault created and unlocked');
     return;
   }
 
@@ -131,7 +132,7 @@ async function unlockCommand(v: VaultService): Promise<void> {
     return;
   }
   await v.unlock(password);
-  void vscode.window.showInformationMessage('Vault unlocked');
+  showTransientToast('Vault unlocked');
 }
 
 async function addCommand(v: VaultService): Promise<void> {
@@ -144,7 +145,7 @@ async function addCommand(v: VaultService): Promise<void> {
   }
   const created = await v.addEntry(input);
   await statusBar?.setActiveEntry(created.id);
-  void vscode.window.showInformationMessage(`Added “${input.name}”`);
+  showTransientToast(`Added “${input.name}”`);
 }
 
 async function resolveEntry(
@@ -167,7 +168,7 @@ async function resolveEntry(
 async function pickEntry(v: VaultService, filterUrl?: string) {
   const entries = filterUrl ? v.findByUrl(filterUrl) : v.listMeta();
   if (entries.length === 0) {
-    void vscode.window.showInformationMessage(
+    showTransientToast(
       filterUrl ? `No entries match “${filterUrl}”` : 'No entries in vault'
     );
     return undefined;
@@ -199,7 +200,7 @@ async function editCommand(v: VaultService, item?: VaultEntryItem): Promise<void
     return;
   }
   await v.updateEntry(entry.id, input);
-  void vscode.window.showInformationMessage(`Updated “${input.name}”`);
+  showTransientToast(`Updated “${input.name}”`);
 }
 
 async function deleteCommand(v: VaultService, item?: VaultEntryItem): Promise<void> {
@@ -216,7 +217,8 @@ async function deleteCommand(v: VaultService, item?: VaultEntryItem): Promise<vo
     return;
   }
   await v.deleteEntry(entry.id);
-  void vscode.window.showInformationMessage(`Deleted “${entry.name}”`);
+  await statusBar?.clearActiveEntryIf(entry.id);
+  showTransientToast(`Deleted “${entry.name}”`);
 }
 
 async function copyUsernameCommand(v: VaultService, item?: VaultEntryItem): Promise<void> {
@@ -315,13 +317,14 @@ async function fillForUrlCommand(v: VaultService): Promise<void> {
     return;
   }
 
-  if (action.id === 'user' || action.id === 'both') {
+  if (action.id === 'user') {
     await clipboard.copy(entry.username, 'Username');
   }
   if (action.id === 'pass') {
     await clipboard.copy(entry.password, 'Password');
   }
   if (action.id === 'both') {
+    await clipboard.copy(entry.username, 'Username', { notify: false });
     const next = await vscode.window.showInformationMessage(
       'Username copied. Paste it in the browser, then copy the password.',
       'Copy Password'
@@ -342,7 +345,6 @@ async function generatePasswordCommand(): Promise<void> {
     return;
   }
   await clipboard.copy(password, 'Generated password');
-  void vscode.window.showInformationMessage('Generated password copied to clipboard');
 }
 
 async function changeMasterPasswordCommand(v: VaultService): Promise<void> {
@@ -359,7 +361,7 @@ async function changeMasterPasswordCommand(v: VaultService): Promise<void> {
     return;
   }
   await v.changeMasterPassword(current, next);
-  void vscode.window.showInformationMessage('Master password changed');
+  showTransientToast('Master password changed');
 }
 
 function guessUrl(text: string | undefined): string {

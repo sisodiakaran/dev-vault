@@ -58,7 +58,7 @@ export async function assistBrowserLogin(
     );
   }
 
-  await clipboard.copy(entry.username, 'Username');
+  await clipboard.copy(entry.username, 'Username', { notify: false });
 
   const next = await vscode.window.showInformationMessage(
     `Username for “${entry.name}” is on the clipboard. Click the username field in the browser and paste (Cmd/Ctrl+V).`,
@@ -67,7 +67,7 @@ export async function assistBrowserLogin(
   );
 
   if (next === 'Copy Password') {
-    await clipboard.copy(entry.password, 'Password');
+    await clipboard.copy(entry.password, 'Password', { notify: false });
     void vscode.window.showInformationMessage(
       'Password copied — click the password field in the browser and paste (Cmd/Ctrl+V).'
     );

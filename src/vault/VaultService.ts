@@ -1,5 +1,6 @@
 import * as vscode from 'vscode';
 import { randomUUID } from 'crypto';
+import { showTransientToast } from '../ui/transientToast';
 import { CryptoService } from './CryptoService';
 import type {
   EncryptedBlob,
@@ -268,7 +269,7 @@ export class VaultService {
     await this.updateContextKeys();
     this._onDidChange.fire();
     if (message) {
-      void vscode.window.showInformationMessage(message);
+      showTransientToast(message);
     }
   }
 

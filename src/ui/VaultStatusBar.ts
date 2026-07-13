@@ -3,6 +3,7 @@ import type { SecureClipboard } from '../clipboard/SecureClipboard';
 import type { VaultEntryMeta } from '../vault/types';
 import type { VaultService } from '../vault/VaultService';
 import { assistBrowserLogin } from './BrowserFill';
+import { showTransientToast } from './transientToast';
 
 const ACTIVE_ENTRY_KEY = 'devvault.statusBar.activeEntryId';
 
@@ -68,6 +69,12 @@ export class VaultStatusBar implements vscode.Disposable {
     this.activeEntryId = id;
     await this.context.globalState.update(ACTIVE_ENTRY_KEY, id);
     this.refresh();
+  }
+
+  async clearActiveEntryIf(id: string): Promise<void> {
+    if (this.activeEntryId === id) {
+      await this.setActiveEntry(undefined);
+    }
   }
 
   refresh(): void {
@@ -273,9 +280,6 @@ export class VaultStatusBar implements vscode.Disposable {
               await this.setActiveEntry(selected.entry.id);
               if (preferredField) {
                 await this.copyFromEntry(selected.entry.id, preferredField);
-                void vscode.window.showInformationMessage(
-                  `DevVault: ${preferredField === 'username' ? 'Username' : 'Password'} copied — paste with Cmd/Ctrl+V.`
-                );
               }
             }
           } catch (err) {
@@ -305,7 +309,7 @@ export class VaultStatusBar implements vscode.Disposable {
       if (!hasEntry || !entryId) {
         const entries = this.vault.listMeta();
         if (entries.length === 0) {
-          void vscode.window.showInformationMessage('DevVault: No entries to copy');
+          showTransientToast('DevVault: No entries to copy');
           return;
         }
         await this.showEntryQuickPick(entries, field);
@@ -313,9 +317,6 @@ export class VaultStatusBar implements vscode.Disposable {
       }
 
       await this.copyFromEntry(entryId, field);
-      void vscode.window.showInformationMessage(
-        `DevVault: ${field === 'username' ? 'Username' : 'Password'} copied — paste in the browser with Cmd/Ctrl+V.`
-      );
     } catch (err) {
       const message = err instanceof Error ? err.message : String(err);
       void vscode.window.showErrorMessage(`DevVault: ${message}`);
